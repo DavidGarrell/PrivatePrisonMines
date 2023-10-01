@@ -1,0 +1,10 @@
+name: PrivateMine
+version: '${project.version}'
+main: skyblock.main.Main
+api-version: 1.19
+softdepend: [WorldEdit]
+depend:
+  - PlayerNPC
+commands:
+  mine:
+  pmine:
