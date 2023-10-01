@@ -112,7 +112,7 @@ public class IslandMenu implements Listener {
         IslandManager islandManager = Main.islandManager;
 
         Player player = (Player) event.getWhoClicked();
-        Island island = islandManager.island.get(player);
+        Island island = islandManager.island.get(player.getUniqueId());
 
         Inventory inventory = event.getInventory();
         if(event.getView().getTitle().equalsIgnoreCase(INVENTORY_NAME)) {

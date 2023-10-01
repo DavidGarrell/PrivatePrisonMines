@@ -1,6 +1,9 @@
 package skyblock.menus;
 
 import com.sun.org.apache.bcel.internal.generic.ANEWARRAY;
+import de.backpack.apfloat.Apfloat;
+import de.backpack.listener.EconomyAPI;
+import de.backpack.listener.UnlimitedNumber;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -27,7 +30,7 @@ public class IslandLevelsMenu implements Listener{
 
     private static final char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
 
-    private static final int NUM_LEVELS = alphabet.length-1;
+    private static final int NUM_LEVELS = alphabet.length;
 
     IslandMaterials islandMaterials = Main.islandMaterials;
     public void openMenu(Player player) {
@@ -39,29 +42,46 @@ public class IslandLevelsMenu implements Listener{
 
         Inventory inventory = Bukkit.createInventory(null, INVENTORY_ROWS * 9, INVENTORY_NAME);
 
-        for (int i = 0; i <= NUM_LEVELS; i++) {
-            ItemStack item = new ItemStack(Material.GRAY_STAINED_GLASS_PANE, 1);
+        for (int i = 0; i <= NUM_LEVELS-1; i++) {
+
+            ItemStack item = new ItemStack(Material.BARRIER, i+1);
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName("§cMine World " + alphabet[i]);
             List<String> lore = new ArrayList<>();
 
-            int island_size = ISLAND_START_SIZE+(i*2);
+            int island_size = ISLAND_START_SIZE+(i*6);
 
-            lore.add("§fIsland size: " + island_size + "x" + island_size);
-            lore.add("§fcost: %price%");
+
+            EconomyAPI economyAPI = de.backpack.main.Main.economyAPI;
+            Apfloat cost = economyAPI.calcWorldCost(player, i);
+            UnlimitedNumber unlimitedNumber = new UnlimitedNumber(String.valueOf(cost));
+
+
+            lore.add("");
+            lore.add("§a§lInformation");
+            lore.add("");
+            lore.add("§bStatus: §c§lLock");
+            lore.add("§bIsland size: §f" + island_size + "x" + island_size);
+            lore.add("§bRequired: " + unlimitedNumber.format());
+            lore.add("");
+            lore.add("§b§lClick to unlock");
             meta.setLore(lore);
             item.setItemMeta(meta);
-            inventory.addItem(item);
+            inventory.setItem(i, item);
         }
-        for (int i = 0; i <= islands.getISLAND_LEVEL(); i++) {
-            ItemStack item = new ItemStack(islandMaterials.islandMaterials.get(i), 1);
+        for (int i = 0; i <= islands.getISLAND_WORLD_LEVEL(); i++) {
+            ItemStack item = new ItemStack(islandMaterials.islandMaterials.get(i), i+1);
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName("§aMine World " + alphabet[i]);
             List<String> lore = new ArrayList<>();
 
-            int island_size = ISLAND_START_SIZE+i;
+            int island_size = ISLAND_START_SIZE+i*6;
 
-            lore.add("§fIsland size: " + island_size + "x" + island_size);
+            lore.add("");
+            lore.add("§a§lInformation");
+            lore.add("");
+            lore.add("§bStatus: §a§lUnlock");
+            lore.add("§bIsland size: §f" + island_size + "x" + island_size);
             meta.setLore(lore);
             item.setItemMeta(meta);
             inventory.setItem(i, item);

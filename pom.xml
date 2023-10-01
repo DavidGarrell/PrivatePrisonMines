@@ -126,5 +126,11 @@
             <scope>system</scope>
             <systemPath>C:/Users/User/OneDrive/Dokumente/Programmierung/Plugin Test Server/plugins/Talents.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>com.mojang</groupId>
+            <artifactId>authlib</artifactId>
+            <version>1.5.21</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

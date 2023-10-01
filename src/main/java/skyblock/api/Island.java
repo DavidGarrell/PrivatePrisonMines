@@ -29,7 +29,11 @@ public class Island {
     private int ISLAND_HIGH = 20;
     private int ISLAND_LEVEL = 0;
 
+    private int ILSAND_STARTXP_NEED = 500;
+
     private int ISLAND_WORLD_LEVEL = 0;
+
+    private String ISLAND_WORLD_STRING = "a";
     public static final int ISLAND_LEVEL_MAX = 90;
 
     public static final int ISLAND_START_SIZE = 35;
@@ -95,7 +99,6 @@ public class Island {
         int z = lastIsland.getBlockZ();
         int d = 500;
 
-        // Create a copy of the last island location
         Location nextIsland = lastIsland.clone();
 
         if (x < z) {
@@ -127,7 +130,7 @@ public class Island {
             this.ISLAND_LEVEL+=1;
             IslandGenerator islandGenerator = new IslandGenerator();
             islandGenerator.generateIsland(getIslandLocation(), ISLAND_SIZE, ISLAND_SIZE, ISLAND_HIGH, ISLAND_LEVEL, player);
-            player.sendMessage(Main.prefix + "§fMine upgrade");
+            player.sendMessage(Main.prefix + "§fMine level");
             IslandMaterials islandMaterials = new IslandMaterials();
             player.sendMessage("§6§lUNLOCK §fnew Mine Block: §f" + islandMaterials.islandMaterials.get(ISLAND_LEVEL));
             moveNPC();
@@ -178,8 +181,8 @@ public class Island {
         islandGenerator.clearIslandFrame(getIslandLocation(), ISLAND_SIZE + 4, ISLAND_SIZE + 4, ISLAND_HIGH, player);
 
 
-        this.ISLAND_SIZE = ISLAND_START_SIZE + ISLAND_WORLD_LEVEL * 4;
-        this.ISLAND_HIGH = ISLAND_START_HIGH + ISLAND_WORLD_LEVEL * 2;
+        this.ISLAND_SIZE = ISLAND_START_SIZE + ISLAND_WORLD_LEVEL * 6;
+        this.ISLAND_HIGH = ISLAND_START_HIGH + ISLAND_WORLD_LEVEL * 3;
 
         if(ISLAND_WORLD_LEVEL<this.getISLAND_WORLD_LEVEL()) {
             islandGenerator.loadIslandSchematic(player, "/island.schem", islandLocation);
@@ -193,8 +196,8 @@ public class Island {
         islandGenerator.generateIsland(getIslandLocation(), ISLAND_SIZE, ISLAND_SIZE, ISLAND_HIGH, ISLAND_LEVEL, player);
         islandGenerator.generateBedrockFrame(getIslandLocation(), ISLAND_SIZE + 4, ISLAND_SIZE + 4, ISLAND_HIGH, player);
 
-
         moveNPC();
+        setISLAND_WORLD_STRING();
     }
 
     public void setISLAND_LEVEL(int ISLAND_LEVEL, Player player) {
@@ -301,7 +304,7 @@ public class Island {
     private int taskidxp = -3;
     public void autoUpgrade(Player player) {
         taskidxp = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
-            long xpneed = 200 + (getISLAND_LEVEL() * getISLAND_LEVEL() * 100L);
+            long xpneed = ILSAND_STARTXP_NEED + (getISLAND_LEVEL() * getISLAND_LEVEL() * 100L);
 
             if (getISLAND_LEVEL() > 20 && getISLAND_LEVEL() < 50) {
                 xpneed = 200 + (getISLAND_LEVEL() * getISLAND_LEVEL() * 300L);
@@ -437,5 +440,14 @@ public class Island {
 
     public NPC.Personal getNpc() {
         return npc;
+    }
+
+
+    public void setISLAND_WORLD_STRING(){
+        char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+        this.ISLAND_WORLD_STRING = String.valueOf(alphabet[ISLAND_WORLD_LEVEL]);
+    }
+    public String getISLAND_WORLD_STRING() {
+        return ISLAND_WORLD_STRING;
     }
 }
