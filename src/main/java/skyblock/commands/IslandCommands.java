@@ -10,6 +10,7 @@ import skyblock.api.IslandGenerator;
 import skyblock.api.IslandManager;
 import skyblock.main.Main;
 import skyblock.menus.IslandLevelsMenu;
+import skyblock.menus.IslandMemberMenu;
 import skyblock.menus.IslandMenu;
 import skyblock.menus.IslandPrestigeMenu;
 
@@ -56,6 +57,11 @@ public class IslandCommands implements CommandExecutor {
                         IslandMenu islandMenu = new IslandMenu();
                         islandMenu.openMenu(player);
                     }
+                } else if (args[0].equalsIgnoreCase("members")) {
+                    if (island != null) {
+                        IslandMemberMenu islandMenu = new IslandMemberMenu();
+                        islandMenu.openMenu(player);
+                    }
                 } else if (args[0].equalsIgnoreCase("reset")) {
                     if (island == null) {
                         sender.sendMessage(prefix + "§fYou don't have a Mine /mine to create one");
@@ -65,63 +71,70 @@ public class IslandCommands implements CommandExecutor {
                         island.resetIsland((Player) sender);
                         sender.sendMessage(prefix + "§fMine has been reset");
                     }
+
                 } else if (args[0].equalsIgnoreCase("upgrade")) {
-                    Player targetPlayer = plugin.getServer().getPlayer(args[1]);
+                    if(sender.hasPermission("mine.upgrade") || sender.hasPermission("mine.admin")) {
+                        Player targetPlayer = plugin.getServer().getPlayer(args[1]);
 
-                    if (args.length < 2 || args[1].isEmpty()) {
-                        player.sendMessage(prefix + "use /mine upgrade <targetPlayerName>");
-
-                    } else {
-                        island = islandManager.island.get(targetPlayer.getUniqueId());
-                        if (targetPlayer != null && island != null) {
-
-                            island.islandUpgrade(targetPlayer);
-                            player.sendMessage(prefix + "Mine size from " + targetPlayer.getName() + "'s Mine has upgraded to " + island.getISLAND_SIZE() + "x" + island.getISLAND_SIZE());
+                        if (args.length < 2 || args[1].isEmpty()) {
+                            player.sendMessage(prefix + "use /mine upgrade <targetPlayerName>");
 
                         } else {
+                            island = islandManager.island.get(targetPlayer.getUniqueId());
+                            if (targetPlayer != null && island != null) {
 
-                            player.sendMessage(targetPlayer.getName() + " has no Mine");
+                                island.islandUpgrade(targetPlayer);
+                                player.sendMessage(prefix + "Mine size from " + targetPlayer.getName() + "'s Mine has upgraded to " + island.getISLAND_SIZE() + "x" + island.getISLAND_SIZE());
+
+                            } else {
+
+                                player.sendMessage(targetPlayer.getName() + " has no Mine");
+                            }
                         }
                     }
                 } else if (args[0].equalsIgnoreCase("setlevel")) {
-                    Player targetPlayer = plugin.getServer().getPlayer(args[1]);
-                    int level = Integer.parseInt(args[2]);
+                    if(sender.hasPermission("mine.setlevel") || sender.hasPermission("mine.admin")) {
+                        Player targetPlayer = plugin.getServer().getPlayer(args[1]);
+                        int level = Integer.parseInt(args[2]);
 
-                    if (args.length < 3 || args[1].isEmpty()) {
-                        player.sendMessage(prefix + "use /mine setlevel <targetPlayerName> <level>");
-
-                    } else {
-                        island = islandManager.island.get(targetPlayer.getUniqueId());
-                        if (targetPlayer != null && island != null) {
-
-                            island.setISLAND_LEVEL(level, targetPlayer);
-                            player.sendMessage(prefix + "Mine level from " + targetPlayer.getName() + "'s Mine has changed to " + island.getISLAND_LEVEL());
+                        if (args.length < 3 || args[1].isEmpty()) {
+                            player.sendMessage(prefix + "use /mine setlevel <targetPlayerName> <level>");
 
                         } else {
+                            island = islandManager.island.get(targetPlayer.getUniqueId());
+                            if (targetPlayer != null && island != null) {
 
-                            assert targetPlayer != null;
-                            player.sendMessage(targetPlayer.getName() + " has no Mine");
+                                island.setISLAND_LEVEL(level, targetPlayer);
+                                player.sendMessage(prefix + "Mine level from " + targetPlayer.getName() + "'s Mine has changed to " + island.getISLAND_LEVEL());
+
+                            } else {
+
+                                assert targetPlayer != null;
+                                player.sendMessage(targetPlayer.getName() + " has no Mine");
+                            }
                         }
                     }
                 } else if (args[0].equalsIgnoreCase("setworld")) {
-                    Player targetPlayer = plugin.getServer().getPlayer(args[1]);
-                    int world = Integer.parseInt(args[2]);
+                    if(sender.hasPermission("mine.setworld") || sender.hasPermission("mine.admin")) {
+                        Player targetPlayer = plugin.getServer().getPlayer(args[1]);
+                        int world = Integer.parseInt(args[2]);
 
-                    if (args.length < 3 || args[1].isEmpty()) {
-                        player.sendMessage(prefix + "use /mine setsize <targetPlayerName> <level>");
-
-                    } else {
-                        island = islandManager.island.get(targetPlayer.getUniqueId());
-                        if (targetPlayer != null && island != null) {
-
-                            island.setISLAND_WORLD_LEVEL(world, targetPlayer);
-                            player.sendMessage(prefix + "Mine size from " + targetPlayer.getName() + "'s Mine has changed to " + island.getISLAND_SIZE());
-
+                        if (args.length < 3 || args[1].isEmpty()) {
+                            player.sendMessage(prefix + "use /mine setsize <targetPlayerName> <level>");
 
                         } else {
+                            island = islandManager.island.get(targetPlayer.getUniqueId());
+                            if (targetPlayer != null && island != null) {
 
-                            assert targetPlayer != null;
-                            player.sendMessage(targetPlayer.getName() + " has no Mine");
+                                island.setISLAND_WORLD_LEVEL(world, targetPlayer);
+                                player.sendMessage(prefix + "Mine size from " + targetPlayer.getName() + "'s Mine has changed to " + island.getISLAND_SIZE());
+
+
+                            } else {
+
+                                assert targetPlayer != null;
+                                player.sendMessage(targetPlayer.getName() + " has no Mine");
+                            }
                         }
                     }
 
@@ -130,7 +143,7 @@ public class IslandCommands implements CommandExecutor {
 
 
                     player.teleport(islandManager.island.get(player.getUniqueId()).getIslandLocation());
-                    sender.sendMessage(prefix + "teleporting to your pmine");
+
                     if (args.length < 2 || args[1].isEmpty()) {
 
                     } else {
@@ -149,7 +162,30 @@ public class IslandCommands implements CommandExecutor {
                     player.sendMessage("Mine Commands:");
                     player.sendMessage("- /mine");
                     player.sendMessage("- /mine menu");
+                    player.sendMessage("- /mine tp <player>");
+                    player.sendMessage("- /mine reset");
+                } else if (args[0].equalsIgnoreCase("trust")) {
+                        Player targetPlayer = plugin.getServer().getPlayer(args[1]);
+
+                        if (args.length < 2 || args[1].isEmpty()) {
+                            player.sendMessage(prefix + "use /mine trust <targetPlayerName>");
+
+                        } else {
+                            if (targetPlayer != null && island != null) {
+
+                                island.addMember(targetPlayer);
+                                player.sendMessage(prefix + "Mine trust " + targetPlayer.getName());
+
+
+                            } else {
+
+                                assert targetPlayer != null;
+                                player.sendMessage(targetPlayer.getName() + " has no Mine");
+                            }
+                        }
+
                 }
+
 
 
                 return false;

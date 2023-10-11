@@ -6,6 +6,7 @@ import de.backpack.listener.EconomyAPI;
 import de.backpack.listener.UnlimitedNumber;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -60,9 +61,9 @@ public class IslandLevelsMenu implements Listener{
             lore.add("");
             lore.add("§a§lInformation");
             lore.add("");
-            lore.add("§bStatus: §c§lLock");
-            lore.add("§bIsland size: §f" + island_size + "x" + island_size);
-            lore.add("§bRequired: " + unlimitedNumber.format());
+            lore.add("§7Status: §c§lLock");
+            lore.add("§7Island size: §f" + island_size + "x" + island_size);
+            lore.add("§7Required: §b" + unlimitedNumber.format() + "$");
             lore.add("");
             lore.add("§b§lClick to unlock");
             meta.setLore(lore);
@@ -80,8 +81,8 @@ public class IslandLevelsMenu implements Listener{
             lore.add("");
             lore.add("§a§lInformation");
             lore.add("");
-            lore.add("§bStatus: §a§lUnlock");
-            lore.add("§bIsland size: §f" + island_size + "x" + island_size);
+            lore.add("§7Status: §a§lUnlock");
+            lore.add("§7Island size: §f" + island_size + "x" + island_size);
             meta.setLore(lore);
             item.setItemMeta(meta);
             inventory.setItem(i, item);
@@ -94,8 +95,30 @@ public class IslandLevelsMenu implements Listener{
 
     public void onInventoryClick(InventoryClickEvent event) {
         Inventory inventory = event.getInventory();
+
+        Player player = (Player) event.getWhoClicked();
+
+        IslandManager islandManager = Main.islandManager;
+        Island island = islandManager.island.get(player.getUniqueId());
+        EconomyAPI economyAPI = de.backpack.main.Main.economyAPI;
+
         if (event.getView().getTitle().equals(INVENTORY_NAME)) {
             event.setCancelled(true);
+
+            if(event.getCurrentItem().getType().equals(Material.BARRIER)) {
+
+                if (event.getCurrentItem().getAmount() == island.getISLAND_WORLD_LEVEL() + 2) {
+
+                    Apfloat cost = economyAPI.calcWorldCost(player, island.getISLAND_WORLD_LEVEL() + 1);
+
+                    if (economyAPI.getCashNumberBalance(player).compareTo(cost) >=0) {
+                        island.setISLAND_WORLD_LEVEL(island.getISLAND_WORLD_LEVEL()+1, player);
+                        economyAPI.removeCashNumberBalance(player, cost);
+                        event.getView().close();
+                        player.sendMessage();
+                    }
+                }
+            }
         }
     }
 }

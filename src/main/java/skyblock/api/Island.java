@@ -1,5 +1,7 @@
 package skyblock.api;
 
+import com.fastasyncworldedit.bukkit.regions.WorldGuardFeature;
+import com.sk89q.worldedit.math.BlockVector3;
 import de.backpack.listener.EconomyAPI;
 import de.prestigesystem.api.PlayerTalents;
 import de.prestigesystem.api.Talent;
@@ -53,6 +55,8 @@ public class Island {
 
     public List<UUID> member = new ArrayList<>();
 
+    public List<Island> trustedIslands = new ArrayList<>();
+
     private boolean islandClose = false;
     private Player islandOwner;
     private BossBar actionBar;
@@ -67,7 +71,6 @@ public class Island {
     }
 
     public void createIsland(Player player) {
-
         World world = player.getWorld();
         UUID uuid = player.getUniqueId();
 
@@ -85,9 +88,7 @@ public class Island {
         islandManager.lastIslandLocation = islandLocation;
         initActionBar();
 
-        WorldBorder wb = world.getWorldBorder();
-        wb.setCenter(this.islandLocation);
-        wb.setSize(250);
+        //World Guard Region
 
         placeNPC(player);
     }
@@ -301,6 +302,7 @@ public class Island {
         }
     }
 
+
     private int taskidxp = -3;
     public void autoUpgrade(Player player) {
         taskidxp = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
@@ -346,6 +348,7 @@ public class Island {
                     }
                 } else {
                     double progress = (double) xp / xpneed;
+
                     int percentage = (int) (progress * 100);
                     int progressBarLength = 10;  // Die Länge des Fortschrittsbalkens
 
@@ -370,7 +373,12 @@ public class Island {
                     }
 
                     if(economyAPI.getCashNumberBalance(player).compareTo(economyAPI.calcRankCost(player)) >= 0) {
-                        actionBarTitle = "§6You can rankup do /rankup!";
+                        actionBarTitle = "§bMine level §f" + getISLAND_LEVEL() + " §b✦ " + progressBar + " " + String.format("§a%.2f", progress * 100) + "%" + " §b✦ §6do /rankup";
+
+                        if (getISLAND_LEVEL() == ISLAND_LEVEL_MAX) {
+                            progress = 1;
+                            actionBarTitle = "Mine level: " + getISLAND_LEVEL() + " | §e§lMAX"  + " §b✦ §6do /rankup";
+                        }
                     }
 
                         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(actionBarTitle));
@@ -379,6 +387,13 @@ public class Island {
                 Bukkit.getServer().getScheduler().runTask(plugin, () -> Bukkit.getServer().getScheduler().cancelTask(taskidxp));
             }
         }, 0, 5);
+    }
+
+    public void stopAutoUpgrade() {
+        if (taskidxp != -1) {
+            Bukkit.getServer().getScheduler().cancelTask(taskidxp);
+            taskidxp = -1;
+        }
     }
     public void initActionBar() {
         actionBar = Bukkit.createBossBar("", BarColor.BLUE, BarStyle.SOLID);
@@ -420,6 +435,7 @@ public class Island {
     }
 
     public boolean checkIfBlockIsInMine(Location location) {
+
         Location islandLocation = getIslandLocation();
         int startX = islandLocation.getBlockX() - ISLAND_SIZE / 2;
         int startY = islandLocation.getBlockY() - ISLAND_HIGH;
@@ -449,5 +465,24 @@ public class Island {
     }
     public String getISLAND_WORLD_STRING() {
         return ISLAND_WORLD_STRING;
+    }
+
+    public void addMember(Player player) {
+
+        UUID uuid = player.getUniqueId();
+        Island island = this;
+
+        if (player.isOnline()) {
+            if (islandManager.island.containsKey(uuid)) {
+                if(!member.contains(uuid)) {
+                    member.add(uuid);
+                    islandManager.island.get(uuid).trustedIslands.add(island);
+                }
+            }
+        }
+    }
+
+    public List getMembers(){
+        return member;
     }
 }

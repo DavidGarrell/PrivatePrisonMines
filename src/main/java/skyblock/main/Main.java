@@ -12,6 +12,8 @@ import skyblock.api.IslandGenerator;
 import skyblock.api.IslandManager;
 import skyblock.api.IslandMaterials;
 import skyblock.api.WorldManager;
+import skyblock.battlepass.api.BattlePassLevel;
+import skyblock.battlepass.commands.BattlePassCommands;
 import skyblock.commands.IslandCommands;
 import skyblock.events.IslandNPC;
 import skyblock.events.PlayerJoin;
@@ -19,6 +21,8 @@ import skyblock.listeners.Listeners;
 import skyblock.menus.IslandLevelsMenu;
 import skyblock.menus.IslandMenu;
 import skyblock.menus.IslandPrestigeMenu;
+import skyblock.playtimerewards.rewards.RewardStore;
+import skyblock.store.PlayerStore;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +42,12 @@ public final class Main extends JavaPlugin {
     private static File dataFolder;
     private static FileConfiguration configuration;
 
+    public PlayerStore playerStore;
+
+    public BattlePassLevel passLevel;
+
+    public RewardStore rewardStore;
+
     @Override
     public void onEnable() {
         NPCLib.getInstance().registerPlugin(this);
@@ -51,9 +61,13 @@ public final class Main extends JavaPlugin {
         instance = this;
         islandManager = new IslandManager();
         economyAPI = de.backpack.main.Main.economyAPI;
+        playerStore = new PlayerStore();
+        this.passLevel = new BattlePassLevel();
+        rewardStore = new RewardStore();
 
         Objects.requireNonNull(getCommand("mine")).setExecutor(new IslandCommands(this));
         Objects.requireNonNull(getCommand("pmine")).setExecutor(new IslandCommands(this));
+        Objects.requireNonNull(getCommand("pass")).setExecutor(new BattlePassCommands(this));
 
         Bukkit.getServer().getPluginManager().registerEvents(new IslandLevelsMenu(), this);
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerJoin(this), this);

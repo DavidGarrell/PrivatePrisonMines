@@ -8,6 +8,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import skyblock.api.Island;
 import skyblock.api.IslandManager;
 import skyblock.main.Main;
+import skyblock.store.PlayerStore;
 
 import static skyblock.api.Island.plugin;
 
@@ -28,6 +29,9 @@ public class PlayerJoin implements Listener {
     public void onJoin(PlayerJoinEvent e){
 
         Player player = e.getPlayer();
+        PlayerStore playerStore = Main.instance.playerStore;
+
+        playerStore.addJoined_Player(player);
 
         player.setGameMode(GameMode.SURVIVAL);
         player.setAllowFlight(true);
@@ -43,6 +47,7 @@ public class PlayerJoin implements Listener {
             Island island = islandManager.island.get(player.getUniqueId());
             player.teleport(island.getIslandPlayerSpawnPoint());
             island.placeNPC(player);
+            island.autoUpgrade(player);
         }
 
     }

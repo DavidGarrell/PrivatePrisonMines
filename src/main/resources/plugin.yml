@@ -5,6 +5,9 @@ api-version: 1.19
 softdepend: [WorldEdit]
 depend:
   - PlayerNPC
+  - WorldGuard
 commands:
   mine:
   pmine:
+  pass:
+  battlepass:

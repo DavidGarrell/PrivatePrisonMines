@@ -10,9 +10,9 @@ import java.util.List;
 public class IslandMaterials {
 
     public HashMap<Integer, Material> islandMaterials = new HashMap<>();
+    public HashMap<Integer, Material> worldMaterials = new HashMap<>();
 
     public IslandMaterials(){
-
 
         islandMaterials.put(0, Material.COBBLESTONE);
         islandMaterials.put(1, Material.MOSSY_COBBLESTONE);
@@ -108,4 +108,6 @@ public class IslandMaterials {
 
 
     }
+
+
 }

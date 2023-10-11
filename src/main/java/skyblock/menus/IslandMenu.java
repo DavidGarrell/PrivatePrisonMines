@@ -37,7 +37,7 @@ public class IslandMenu implements Listener {
 
 
         IslandManager islandManager = Main.islandManager;
-        Island islands = islandManager.island.get(player);
+        Island islands = islandManager.island.get(player.getUniqueId());
 
         Inventory inventory = Bukkit.createInventory(null, INVENTORY_ROWS * 9, INVENTORY_NAME);
 
@@ -67,7 +67,10 @@ public class IslandMenu implements Listener {
         meta1.setDisplayName("§bMine World");
         List<String> lore1 = new ArrayList<>();
         lore1.add("");
-        lore1.add("§7Click to open the Mine World menu");
+        lore1.add("§7by reaching new mine worlds");
+        lore1.add("§7the size of your mine will increase");
+        lore1.add("");
+        lore1.add("§7current World: §a" + islands.getISLAND_WORLD_STRING());
         lore1.add("");
         lore1.add("§bclick to open!");
         meta1.setLore(lore1);
@@ -95,6 +98,8 @@ public class IslandMenu implements Listener {
         lore3.add("§bclick to open!");
         meta3.setLore(lore3);
         item3.setItemMeta(meta3);
+
+
 
         inventory.setItem(13, item);
         inventory.setItem(29, item1);
