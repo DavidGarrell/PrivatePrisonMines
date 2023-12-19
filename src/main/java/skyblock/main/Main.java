@@ -3,17 +3,14 @@ package skyblock.main;
 import de.backpack.listener.EconomyAPI;
 import dev.sergiferry.playernpc.api.NPCLib;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-import skyblock.api.IslandGenerator;
 import skyblock.api.IslandManager;
 import skyblock.api.IslandMaterials;
 import skyblock.api.WorldManager;
 import skyblock.battlepass.api.BattlePassLevel;
-import skyblock.battlepass.commands.BattlePassCommands;
+import skyblock.playtimerewards.commands.PlayTimeRewardsCommands;
 import skyblock.commands.IslandCommands;
 import skyblock.events.IslandNPC;
 import skyblock.events.PlayerJoin;
@@ -25,7 +22,6 @@ import skyblock.playtimerewards.rewards.RewardStore;
 import skyblock.store.PlayerStore;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 public final class Main extends JavaPlugin {
@@ -67,7 +63,8 @@ public final class Main extends JavaPlugin {
 
         Objects.requireNonNull(getCommand("mine")).setExecutor(new IslandCommands(this));
         Objects.requireNonNull(getCommand("pmine")).setExecutor(new IslandCommands(this));
-        Objects.requireNonNull(getCommand("pass")).setExecutor(new BattlePassCommands(this));
+        Objects.requireNonNull(getCommand("rewards")).setExecutor(new PlayTimeRewardsCommands(this));
+        Objects.requireNonNull(getCommand("gifts")).setExecutor(new PlayTimeRewardsCommands(this));
 
         Bukkit.getServer().getPluginManager().registerEvents(new IslandLevelsMenu(), this);
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerJoin(this), this);

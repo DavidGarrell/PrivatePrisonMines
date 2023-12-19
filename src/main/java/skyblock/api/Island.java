@@ -28,19 +28,21 @@ import java.util.List;
 public class Island {
 
     private int ISLAND_SIZE = 35;
-    private int ISLAND_HIGH = 20;
-    private int ISLAND_LEVEL = 0;
+    private int ISLAND_HIGH = 40;
+    private int ISLAND_LEVEL = 1;
 
-    private int ILSAND_STARTXP_NEED = 500;
+    private int ILSAND_STARTXP_NEED = 100;
+    private int ILSAND_XP_PERLEVEL = 100;
+
 
     private int ISLAND_WORLD_LEVEL = 0;
 
     private String ISLAND_WORLD_STRING = "a";
-    public static final int ISLAND_LEVEL_MAX = 90;
+    public static final int ISLAND_LEVEL_MAX = 900;
 
     public static final int ISLAND_START_SIZE = 35;
 
-    public static final int ISLAND_START_HIGH = 20;
+    public static final int ISLAND_START_HIGH = 40;
 
     public static Plugin plugin;
 
@@ -125,16 +127,44 @@ public class Island {
         nextIsland.setZ(nextIsland.getZ() - d);
         return nextIsland;
     }
+
+    public void emeraldRush(Player player){
+        IslandGenerator islandGenerator = new IslandGenerator();
+
+        islandGenerator.emeraldRush(getIslandLocation(), ISLAND_SIZE, ISLAND_SIZE, ISLAND_HIGH, ISLAND_LEVEL, player);
+    }
     public void islandUpgrade(Player player) {
 
         if(getISLAND_LEVEL()<ISLAND_LEVEL_MAX) {
             this.ISLAND_LEVEL+=1;
-            IslandGenerator islandGenerator = new IslandGenerator();
-            islandGenerator.generateIsland(getIslandLocation(), ISLAND_SIZE, ISLAND_SIZE, ISLAND_HIGH, ISLAND_LEVEL, player);
-            player.sendMessage(Main.prefix + "§fMine level");
-            IslandMaterials islandMaterials = new IslandMaterials();
-            player.sendMessage("§6§lUNLOCK §fnew Mine Block: §f" + islandMaterials.islandMaterials.get(ISLAND_LEVEL));
-            moveNPC();
+
+            int next_block = ISLAND_LEVEL/10;
+            int next_reward_level = 10-ISLAND_LEVEL%10;
+
+            if (this.ISLAND_LEVEL % 10 == 0) {
+                IslandGenerator islandGenerator = new IslandGenerator();
+                String color = RewardStrings.getRandomColor()+ "§l";
+                player.sendMessage(color + RewardStrings.getRandomMessage() + "§fYou have reached mine level " + color + ISLAND_LEVEL);
+                IslandMaterials islandMaterials = new IslandMaterials();
+                player.sendMessage("§6§lUNLOCK §fnew Mine Block: §f" + islandMaterials.islandMaterials.get(next_block));
+
+                islandGenerator.clearIsland(getIslandLocation(), ISLAND_SIZE, ISLAND_SIZE, ISLAND_HIGH, player);
+                islandGenerator.clearIslandFrame(getIslandLocation(), ISLAND_SIZE + 4, ISLAND_SIZE + 4, ISLAND_HIGH, player);
+
+                this.ISLAND_SIZE = ISLAND_START_SIZE + ISLAND_LEVEL/10 * 2;
+                this.ISLAND_HIGH = ISLAND_START_HIGH + ISLAND_LEVEL/10;
+
+                islandGenerator.clearIslandSchem(getIslandLocation(), ISLAND_SIZE+4, ISLAND_SIZE+4, ISLAND_HIGH+1, player);
+                islandGenerator.clearIsland(getIslandLocation(), ISLAND_SIZE+1, ISLAND_SIZE+1, ISLAND_HIGH+1, player);
+                islandGenerator.generateIsland(getIslandLocation(), ISLAND_SIZE, ISLAND_SIZE, ISLAND_HIGH, ISLAND_LEVEL, player);
+                islandGenerator.generateBedrockFrame(getIslandLocation(), ISLAND_SIZE + 4, ISLAND_SIZE + 4, ISLAND_HIGH, player);
+
+                moveNPC();
+            }
+            else {
+                String color = RewardStrings.getRandomColor()+ "§l";
+                player.sendMessage(color + RewardStrings.getRandomMessage() + "§fYou have reached mine level " + color + ISLAND_LEVEL + ". §fYou need " + color + next_reward_level + " §fmore mine level to get a new mine block");
+            }
         }
 
     }
@@ -187,8 +217,6 @@ public class Island {
 
         if(ISLAND_WORLD_LEVEL<this.getISLAND_WORLD_LEVEL()) {
             islandGenerator.loadIslandSchematic(player, "/island.schem", islandLocation);
-
-
         }
         islandGenerator.clearIslandSchem(getIslandLocation(), ISLAND_SIZE+4, ISLAND_SIZE+4, ISLAND_HIGH+1, player);
         this.ISLAND_WORLD_LEVEL = ISLAND_WORLD_LEVEL;
@@ -204,9 +232,29 @@ public class Island {
     public void setISLAND_LEVEL(int ISLAND_LEVEL, Player player) {
 
         IslandGenerator islandGenerator = new IslandGenerator();
+
+        int ISLAND_LEVEL_BEFORE = this.ISLAND_LEVEL;
         this.ISLAND_LEVEL = ISLAND_LEVEL;
-        islandGenerator.generateIsland(getIslandLocation(), ISLAND_SIZE, ISLAND_SIZE, ISLAND_HIGH, ISLAND_LEVEL, player);
-        moveNPC();
+
+        if (this.ISLAND_LEVEL % 10 == 0) {
+
+            islandGenerator.clearIsland(getIslandLocation(), ISLAND_SIZE, ISLAND_SIZE, ISLAND_HIGH, player);
+            islandGenerator.clearIslandFrame(getIslandLocation(), ISLAND_SIZE + 4, ISLAND_SIZE + 4, ISLAND_HIGH, player);
+
+            this.ISLAND_SIZE = ISLAND_START_SIZE + ISLAND_LEVEL/10 * 2;
+            this.ISLAND_HIGH = ISLAND_START_HIGH + ISLAND_LEVEL/10;
+
+            if(ISLAND_LEVEL<ISLAND_LEVEL_BEFORE) {
+                islandGenerator.loadIslandSchematic(player, "/island.schem", islandLocation);
+            }
+            islandGenerator.clearIslandSchem(getIslandLocation(), ISLAND_SIZE+4, ISLAND_SIZE+4, ISLAND_HIGH+1, player);
+            islandGenerator.clearIsland(getIslandLocation(), ISLAND_SIZE+1, ISLAND_SIZE+1, ISLAND_HIGH+1, player);
+            islandGenerator.generateIsland(getIslandLocation(), ISLAND_SIZE, ISLAND_SIZE, ISLAND_HIGH, ISLAND_LEVEL, player);
+            islandGenerator.generateBedrockFrame(getIslandLocation(), ISLAND_SIZE + 4, ISLAND_SIZE + 4, ISLAND_HIGH, player);
+
+            moveNPC();
+
+        }
     }
 
     public Location getIslandPlayerSpawnPoint() {
@@ -221,7 +269,7 @@ public class Island {
     public void placeNPC(Player player){
 
         npc = NPCLib.getInstance().generatePersonalNPC(player, plugin, player.getUniqueId().toString(), getIslandNPCSpawnPoint());
-        npc.setText("Mine Settings", "§e§lRight Click".toUpperCase());
+        npc.setText("Cobblemate", "§e§lRight Click".toUpperCase());
         npc.setGazeTrackingType(NPC.GazeTrackingType.PLAYER);
         npc.setGlowing(true, ChatColor.AQUA);
         npc.setSkin(
@@ -273,7 +321,7 @@ public class Island {
 
         taskid_p = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
 
-            if(islandGenerator.getBlocksInMine(getIslandLocation(), ISLAND_SIZE, ISLAND_SIZE, ISLAND_HIGH, ISLAND_LEVEL, player)/5 <=islandGenerator.getAirBlocksInMine(getIslandLocation(), ISLAND_SIZE, ISLAND_SIZE, ISLAND_HIGH, ISLAND_LEVEL, player)) {
+            if(islandGenerator.getBlocksInMine(getIslandLocation(), ISLAND_SIZE, ISLAND_SIZE, ISLAND_HIGH, ISLAND_LEVEL, player)/2 <=islandGenerator.getAirBlocksInMine(getIslandLocation(), ISLAND_SIZE, ISLAND_SIZE, ISLAND_HIGH, ISLAND_LEVEL, player)) {
                 resetIsland(player);
             } else if (!player.isOnline()) {
                 Bukkit.getServer().getScheduler().runTask(plugin, () -> Bukkit.getServer().getScheduler().cancelTask(taskid));
@@ -304,15 +352,18 @@ public class Island {
 
 
     private int taskidxp = -3;
+
+    public long calcXPNeedNextLevel(){
+
+        if(ISLAND_LEVEL<450) {
+            return (long) (ILSAND_STARTXP_NEED * Math.pow(1.028, ISLAND_LEVEL));
+        } else return (long) (ILSAND_STARTXP_NEED * Math.pow(1.028, 450) * Math.pow(1.0015, ISLAND_LEVEL));
+    }
     public void autoUpgrade(Player player) {
         taskidxp = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
-            long xpneed = ILSAND_STARTXP_NEED + (getISLAND_LEVEL() * getISLAND_LEVEL() * 100L);
+            long xpneed = calcXPNeedNextLevel();
 
-            if (getISLAND_LEVEL() > 20 && getISLAND_LEVEL() < 50) {
-                xpneed = 200 + (getISLAND_LEVEL() * getISLAND_LEVEL() * 300L);
-            } else if (getISLAND_LEVEL() > 50) {
-                xpneed = 200 + (getISLAND_LEVEL() * getISLAND_LEVEL() * 500L);
-            }
+
             EconomyAPI economyAPI = de.backpack.main.Main.economyAPI;
             long xp = economyAPI.getXP(player);
 
@@ -350,7 +401,7 @@ public class Island {
                     double progress = (double) xp / xpneed;
 
                     int percentage = (int) (progress * 100);
-                    int progressBarLength = 10;  // Die Länge des Fortschrittsbalkens
+                    int progressBarLength = 15;  // Die Länge des Fortschrittsbalkens
 
                     StringBuilder progressBar = new StringBuilder("§8["); // Grauer Balken
 

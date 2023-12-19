@@ -72,6 +72,9 @@ public class IslandGenerator {
         BlockVector3 vector2 = BlockVector3.at(startX + ISLAND_SIZE_X - 1, startY + ISLAND_SIZE_Y - 1, startZ + ISLAND_SIZE_Z - 1);
         CuboidRegion region = new CuboidRegion(new BukkitWorld(player.getWorld()), vector1, vector2);
         session.setFastMode(true);
+
+        level/=10;
+
         BlockType cobble = BlockTypes.parse(String.valueOf(islandMaterials.islandMaterials.get(level)));
         BlockState blockState = cobble.getDefaultState();
         BaseBlock block = blockState.toBaseBlock();
@@ -276,6 +279,7 @@ public class IslandGenerator {
         BlockVector3 vector2 = BlockVector3.at(startX + ISLAND_SIZE_X - 1, startY + ISLAND_SIZE_Y - 1, startZ + ISLAND_SIZE_Z - 1);
         CuboidRegion region = new CuboidRegion(new BukkitWorld(player.getWorld()), vector1, vector2);
         session.setFastMode(true);
+        level/=10;
         BlockType cobble = BlockTypes.parse(String.valueOf(islandMaterials.islandMaterials.get(level)));
         BlockState blockState = cobble.getDefaultState();
         BaseBlock block = blockState.toBaseBlock();
@@ -461,6 +465,31 @@ public class IslandGenerator {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void emeraldRush(Location location, int ISLAND_SIZE_X, int ISLAND_SIZE_Z, int ISLAND_SIZE_Y, int level, Player player) {
+        int startX = location.getBlockX() - ISLAND_SIZE_X / 2;
+        int startY = location.getBlockY() - ISLAND_SIZE_Y - 1;
+        int startZ = location.getBlockZ() - ISLAND_SIZE_Z / 2;
+
+        EditSession session = WorldEdit.getInstance().getEditSessionFactory().getEditSession(new BukkitWorld(player.getWorld()), -1);
+        BlockVector3 vector1 = BlockVector3.at(startX, startY + 3, startZ);
+        BlockVector3 vector2 = BlockVector3.at(startX + ISLAND_SIZE_X - 1, startY + ISLAND_SIZE_Y - 1, startZ + ISLAND_SIZE_Z - 1);
+        CuboidRegion region = new CuboidRegion(new BukkitWorld(player.getWorld()), vector1, vector2);
+        session.setFastMode(true);
+        session.setReorderMode(EditSession.ReorderMode.FAST);
+        BlockType cobble = BlockTypes.parse(String.valueOf(Material.EMERALD_BLOCK));
+        BlockState blockState = cobble.getDefaultState();
+        BaseBlock block = blockState.toBaseBlock();
+        Pattern p = block;
+        session.setReorderMode(EditSession.ReorderMode.FAST);
+        session.disableBuffering();
+        session.setBlocks((Region) region, p);
+
+        if (player.getLocation().getBlockY() < 149) {
+            player.teleport(location);
+        }
+        session.flushSession();
     }
 }
 
