@@ -6,6 +6,7 @@ softdepend: [WorldEdit]
 depend:
   - PlayerNPC
   - WorldGuard
+  - Citizens
 commands:
   mine:
   pmine:

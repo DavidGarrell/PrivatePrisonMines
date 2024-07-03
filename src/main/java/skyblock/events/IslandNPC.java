@@ -1,6 +1,7 @@
 package skyblock.events;
 
-import dev.sergiferry.playernpc.api.NPC;
+import net.citizensnpcs.api.event.NPCClickEvent;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,17 +15,18 @@ public class IslandNPC implements Listener {
 
     @EventHandler
 
-    public void onClickNPC(NPC.Events.Interact event){
-        Player player = event.getPlayer();
+    public void onClickNPC(NPCClickEvent event){
+        Player player = event.getClicker();
+
         NPC npc = event.getNPC();
-        NPC.Interact.ClickType clickType = event.getClickType();
 
         IslandManager islandManager = Main.islandManager;
 
 
-        if(npc.getID().equals(islandManager.island.get(player.getUniqueId()).getNpc().getID())){
+        if(npc.equals(islandManager.island.get(player.getUniqueId()).getNpc())){
             IslandMenu islandMenu = new IslandMenu();
             islandMenu.openMenu(player);
         }
+
     }
 }

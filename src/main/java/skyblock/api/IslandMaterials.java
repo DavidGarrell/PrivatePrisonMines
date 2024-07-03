@@ -14,6 +14,7 @@ public class IslandMaterials {
 
     public IslandMaterials(){
 
+        islandMaterials.put(200, Material.RAW_GOLD_BLOCK);
         islandMaterials.put(0, Material.COBBLESTONE);
         islandMaterials.put(1, Material.MOSSY_COBBLESTONE);
         islandMaterials.put(2, Material.PACKED_MUD);
@@ -101,10 +102,9 @@ public class IslandMaterials {
         islandMaterials.put(84, Material.LAPIS_BLOCK);
         islandMaterials.put(85, Material.IRON_BLOCK);
         islandMaterials.put(86, Material.GOLD_BLOCK);
-        islandMaterials.put(87, Material.EMERALD_BLOCK);
+        islandMaterials.put(85, Material.EMERALD_BLOCK);
         islandMaterials.put(88, Material.DIAMOND_BLOCK);
         islandMaterials.put(89, Material.NETHERITE_BLOCK);
-        islandMaterials.put(90, Material.NETHERITE_BLOCK);
 
 
     }

@@ -1,5 +1,6 @@
 package skyblock.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -141,7 +142,6 @@ public class IslandCommands implements CommandExecutor {
                 } else if (args[0].equalsIgnoreCase("tp")) {
                     Player targetPlayer = plugin.getServer().getPlayer(args[1]);
 
-
                     player.teleport(islandManager.island.get(player.getUniqueId()).getIslandLocation());
 
                     if (args.length < 2 || args[1].isEmpty()) {
@@ -184,9 +184,13 @@ public class IslandCommands implements CommandExecutor {
                             }
                         }
 
-                }
 
-
+                } else if (args[0].equalsIgnoreCase("reload")) {
+                    for (Player target : Bukkit.getServer().getOnlinePlayers()) {
+                        target.kickPlayer("Reload");
+                    }
+                    Bukkit.getServer().reload();
+            }
 
                 return false;
             }

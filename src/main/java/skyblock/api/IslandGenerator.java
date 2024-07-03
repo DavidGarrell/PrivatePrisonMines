@@ -43,6 +43,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.Objects;
 
 public class IslandGenerator {
@@ -59,7 +60,7 @@ public class IslandGenerator {
         return (WorldEditPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
     }
 
-    public void generateIsland(Location location, int ISLAND_SIZE_X, int ISLAND_SIZE_Z, int ISLAND_SIZE_Y, int level, Player player) {
+    public void generateIsland(Island island, Location location, int ISLAND_SIZE_X, int ISLAND_SIZE_Z, int ISLAND_SIZE_Y, int level, Player player) {
 
         World world = location.getWorld();
 
@@ -73,6 +74,20 @@ public class IslandGenerator {
         CuboidRegion region = new CuboidRegion(new BukkitWorld(player.getWorld()), vector1, vector2);
         session.setFastMode(true);
 
+        RandomPattern pat = new RandomPattern();
+
+        for(Map.Entry<Material, Float> material : island.getMine_Materials().entrySet()) {
+            BlockType cobble = BlockTypes.parse(String.valueOf(material.getKey()));
+            BlockState blockState = cobble.getDefaultState();
+            BaseBlock block = blockState.toBaseBlock();
+            Pattern p = block;
+            session.disableBuffering();
+            session.setBlocks((Region) region, p);
+            pat.add(p, material.getValue());
+        }
+
+        /*
+
         level/=10;
 
         BlockType cobble = BlockTypes.parse(String.valueOf(islandMaterials.islandMaterials.get(level)));
@@ -84,7 +99,28 @@ public class IslandGenerator {
 
         RandomPattern pat = new RandomPattern();
 
+         */
 
+
+        /**
+         *     SUPER BLOCK
+         */
+
+
+        /*
+        BlockType super_block = BlockTypes.parse(String.valueOf(Material.RAW_GOLD_BLOCK));
+        BlockState sblockState = super_block.getDefaultState();
+        BaseBlock sblock = sblockState.toBaseBlock();
+        Pattern s = sblock;
+        pat.add(s, 0.001);
+
+         */
+
+        /**
+         *
+         */
+
+        /*
         if (level == 0) {
             pat.add(p, 1);
         }
@@ -135,12 +171,15 @@ public class IslandGenerator {
             pat.add(p3, 0.25);
             pat.add(p4, 0.25);
         }
+
+         */
         session.setReorderMode(EditSession.ReorderMode.FAST);
         session.setBlocks((Region) region, pat);
         session.flushSession();
         if (player.getLocation().getBlockY() < 149) {
             player.teleport(location);
         }
+
     }
 
     public void clearIsland(Location location, int ISLAND_SIZE_X, int ISLAND_SIZE_Z, int ISLAND_SIZE_Y, Player player) {
@@ -269,7 +308,33 @@ public class IslandGenerator {
 
     }
 
-    public void resetIsland(Location location, int ISLAND_SIZE_X, int ISLAND_SIZE_Z, int ISLAND_SIZE_Y, int level, Player player) {
+    public void generateCustomFrame(Location location, int ISLAND_SIZE_X, int ISLAND_SIZE_Z, int ISLAND_SIZE_Y, Player player, Material material) {
+        World world = location.getWorld();
+        int startX = location.getBlockX() - ISLAND_SIZE_X / 2;
+        int startY = location.getBlockY() - 1; // Verschiebung um die Höhe des Cubes und der Bedrock-Schicht nach unten
+        int startZ = location.getBlockZ() - ISLAND_SIZE_Z / 2;
+
+        //frame
+        EditSession session = WorldEdit.getInstance().getEditSessionFactory().getEditSession(new BukkitWorld(player.getWorld()), -1);
+        BlockVector3 vector1 = BlockVector3.at(startX, startY-1, startZ);
+        BlockVector3 vector2 = BlockVector3.at(startX + ISLAND_SIZE_X - 1, startY - 1, startZ + ISLAND_SIZE_Z - 1);
+        CuboidRegion region = new CuboidRegion(new BukkitWorld(player.getWorld()), vector1, vector2);
+        BlockType cobble = BlockTypes.parse(material.name());
+        session.setFastMode(true);
+        BlockState blockState = cobble.getDefaultState();
+        BaseBlock block = blockState.toBaseBlock();
+        Pattern p = block;
+        session.setReorderMode(EditSession.ReorderMode.FAST);
+        session.disableBuffering();
+        session.makeCuboidWalls((Region) region, p);
+        session.flushSession();
+
+        //bottom
+
+
+    }
+
+    public void resetIsland(Island island, Location location, int ISLAND_SIZE_X, int ISLAND_SIZE_Z, int ISLAND_SIZE_Y, int level, Player player) {
         int startX = location.getBlockX() - ISLAND_SIZE_X / 2;
         int startY = location.getBlockY() - ISLAND_SIZE_Y - 1;
         int startZ = location.getBlockZ() - ISLAND_SIZE_Z / 2;
@@ -279,7 +344,34 @@ public class IslandGenerator {
         BlockVector3 vector2 = BlockVector3.at(startX + ISLAND_SIZE_X - 1, startY + ISLAND_SIZE_Y - 1, startZ + ISLAND_SIZE_Z - 1);
         CuboidRegion region = new CuboidRegion(new BukkitWorld(player.getWorld()), vector1, vector2);
         session.setFastMode(true);
-        level/=10;
+
+        RandomPattern pat = new RandomPattern();
+
+        try {
+
+            for (Map.Entry<Material, Float> material : island.getMine_Materials().entrySet()) {
+                BlockType cobble = BlockTypes.parse(String.valueOf(material.getKey()));
+                BlockState blockState = cobble.getDefaultState();
+                BaseBlock block = blockState.toBaseBlock();
+                Pattern p = block;
+                session.disableBuffering();
+                session.setBlocks((Region) region, p);
+
+                float round_chance = Math.round(material.getValue() * 1000.0f) / 1000.0f;
+                pat.add(p, round_chance);
+            }
+        } catch (Exception e){
+            System.out.println("Error by Mine reset");
+            BlockType cobble = BlockTypes.parse(String.valueOf(Material.BEDROCK));
+            BlockState blockState = cobble.getDefaultState();
+            BaseBlock block = blockState.toBaseBlock();
+            Pattern p = block;
+            session.disableBuffering();
+            session.setBlocks((Region) region, p);
+            pat.add(p, 1);
+        }
+
+     /*   level/=10;
         BlockType cobble = BlockTypes.parse(String.valueOf(islandMaterials.islandMaterials.get(level)));
         BlockState blockState = cobble.getDefaultState();
         BaseBlock block = blockState.toBaseBlock();
@@ -290,6 +382,20 @@ public class IslandGenerator {
 
         RandomPattern pat = new RandomPattern();
 
+        *//**
+         *     SUPER BLOCK
+         *//*
+
+
+        BlockType super_block = BlockTypes.parse(String.valueOf(Material.RAW_GOLD_BLOCK));
+        BlockState sblockState = super_block.getDefaultState();
+        BaseBlock sblock = sblockState.toBaseBlock();
+        Pattern s = sblock;
+        pat.add(s, 0.001);
+
+        *//**
+         *
+         *//*
 
         if (level == 0) {
             pat.add(p, 1);
@@ -340,7 +446,7 @@ public class IslandGenerator {
             pat.add(p2, 0.25);
             pat.add(p3, 0.25);
             pat.add(p4, 0.25);
-        }
+        }*/
         session.setReorderMode(EditSession.ReorderMode.FAST);
         session.setBlocks((Region) region, pat);
 
@@ -472,13 +578,16 @@ public class IslandGenerator {
         int startY = location.getBlockY() - ISLAND_SIZE_Y - 1;
         int startZ = location.getBlockZ() - ISLAND_SIZE_Z / 2;
 
+        IslandManager islandManager = Main.islandManager;
+        Island island = islandManager.island.get(player.getUniqueId());
+
         EditSession session = WorldEdit.getInstance().getEditSessionFactory().getEditSession(new BukkitWorld(player.getWorld()), -1);
         BlockVector3 vector1 = BlockVector3.at(startX, startY + 3, startZ);
         BlockVector3 vector2 = BlockVector3.at(startX + ISLAND_SIZE_X - 1, startY + ISLAND_SIZE_Y - 1, startZ + ISLAND_SIZE_Z - 1);
         CuboidRegion region = new CuboidRegion(new BukkitWorld(player.getWorld()), vector1, vector2);
         session.setFastMode(true);
         session.setReorderMode(EditSession.ReorderMode.FAST);
-        BlockType cobble = BlockTypes.parse(String.valueOf(Material.EMERALD_BLOCK));
+        BlockType cobble = BlockTypes.parse(String.valueOf(island.getHighestMaterial()));
         BlockState blockState = cobble.getDefaultState();
         BaseBlock block = blockState.toBaseBlock();
         Pattern p = block;

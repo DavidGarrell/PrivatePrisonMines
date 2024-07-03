@@ -64,7 +64,7 @@ public class IslandMenu implements Listener {
 
         ItemStack item1 = new ItemStack(Material.MINER_POTTERY_SHERD, 1);
         ItemMeta meta1 = item1.getItemMeta();
-        meta1.setDisplayName("§bMine World");
+        meta1.setDisplayName("§bMine Materials");
         List<String> lore1 = new ArrayList<>();
         lore1.add("");
         lore1.add("§7by reaching new mine worlds");
@@ -99,12 +99,24 @@ public class IslandMenu implements Listener {
         meta3.setLore(lore3);
         item3.setItemMeta(meta3);
 
+        ItemStack item4 = new ItemStack(Material.ITEM_FRAME, 1);
+        ItemMeta meta4 = item4.getItemMeta();
+        meta4.setDisplayName("§bCustom Frame");
+        List<String> lore4 = new ArrayList<>();
+        lore4.add("");
+        lore4.add("§7Click to set a custom mine frame");
+        lore4.add("");
+        lore4.add("§bclick to open!");
+        meta4.setLore(lore4);
+        item4.setItemMeta(meta4);
+
 
 
         inventory.setItem(13, item);
         inventory.setItem(29, item1);
         inventory.setItem(31, item2);
         inventory.setItem(33, item3);
+        inventory.setItem(34, item4);
 
 
         player.openInventory(inventory);
@@ -127,15 +139,20 @@ public class IslandMenu implements Listener {
                     player.teleport(island.getIslandLocation());
                     player.closeInventory();
                 }
-                if(event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("§bMine World")){
-                    IslandLevelsMenu islandLevelsMenu = new IslandLevelsMenu();
-                    islandLevelsMenu.openMenu(player);
+                if(event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("§bMine Materials")){
+                    MineBlocksMenu mineBlocksMenu = new MineBlocksMenu();
+                    mineBlocksMenu.openMenu(player);
 
                 }
                 if(event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("§bMine Themes")){
                     event.setCancelled(true);
                 }
                 if(event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("§bMine Settings")){
+                    event.setCancelled(true);
+                }
+                if(event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("§bCustom Frame")){
+                    CustomFrameMenu customFrameMenu = new CustomFrameMenu();
+                    customFrameMenu.openMenu(player);
                     event.setCancelled(true);
                 }
             }
