@@ -1,14 +1,5 @@
 package skyblock.api;
 
-import com.fastasyncworldedit.bukkit.regions.WorldGuardFeature;
-import com.sk89q.worldedit.math.BlockVector3;
-import de.backpack.listener.EconomyAPI;
-import de.prestigesystem.api.PlayerTalents;
-import de.prestigesystem.api.Talent;
-import de.prestigesystem.api.UserManager;
-import de.prestigesystem.events.TalentInitialzier;
-import dev.sergiferry.playernpc.api.NPC;
-import dev.sergiferry.playernpc.api.NPCLib;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
@@ -65,7 +56,7 @@ public class Island {
 
     private String prefix = Main.prefix;
     private IslandManager islandManager = Main.islandManager;
-    NPC.Personal npc;
+
 
     public Island(Player owner, Plugin plugin) {
         this.islandOwner = owner;
@@ -86,13 +77,11 @@ public class Island {
         islandGenerator.generateBedrockFrame(islandLocation, ISLAND_START_SIZE + 4, ISLAND_START_SIZE + 4, ISLAND_START_HIGH, player);
         islandGenerator.clearIslandSchem(getIslandLocation(), ISLAND_SIZE+4, ISLAND_SIZE+4, ISLAND_HIGH+1, player);
         mineAutoResetByPercent(player);
-        autoUpgrade(player);
         islandManager.lastIslandLocation = islandLocation;
         initActionBar();
 
         //World Guard Region
 
-        placeNPC(player);
     }
 
 
@@ -127,12 +116,7 @@ public class Island {
         nextIsland.setZ(nextIsland.getZ() - d);
         return nextIsland;
     }
-
-    public void emeraldRush(Player player){
-        IslandGenerator islandGenerator = new IslandGenerator();
-
-        islandGenerator.emeraldRush(getIslandLocation(), ISLAND_SIZE, ISLAND_SIZE, ISLAND_HIGH, ISLAND_LEVEL, player);
-    }
+    
     public void islandUpgrade(Player player) {
 
         if(getISLAND_LEVEL()<ISLAND_LEVEL_MAX) {
@@ -159,7 +143,6 @@ public class Island {
                 islandGenerator.generateIsland(getIslandLocation(), ISLAND_SIZE, ISLAND_SIZE, ISLAND_HIGH, ISLAND_LEVEL, player);
                 islandGenerator.generateBedrockFrame(getIslandLocation(), ISLAND_SIZE + 4, ISLAND_SIZE + 4, ISLAND_HIGH, player);
 
-                moveNPC();
             }
             else {
                 String color = RewardStrings.getRandomColor()+ "§l";
@@ -225,7 +208,7 @@ public class Island {
         islandGenerator.generateIsland(getIslandLocation(), ISLAND_SIZE, ISLAND_SIZE, ISLAND_HIGH, ISLAND_LEVEL, player);
         islandGenerator.generateBedrockFrame(getIslandLocation(), ISLAND_SIZE + 4, ISLAND_SIZE + 4, ISLAND_HIGH, player);
 
-        moveNPC();
+
         setISLAND_WORLD_STRING();
     }
 
@@ -252,7 +235,6 @@ public class Island {
             islandGenerator.generateIsland(getIslandLocation(), ISLAND_SIZE, ISLAND_SIZE, ISLAND_HIGH, ISLAND_LEVEL, player);
             islandGenerator.generateBedrockFrame(getIslandLocation(), ISLAND_SIZE + 4, ISLAND_SIZE + 4, ISLAND_HIGH, player);
 
-            moveNPC();
 
         }
     }
@@ -266,35 +248,6 @@ public class Island {
         return playerSpawnLoc;
     }
 
-    public void placeNPC(Player player){
-
-        npc = NPCLib.getInstance().generatePersonalNPC(player, plugin, player.getUniqueId().toString(), getIslandNPCSpawnPoint());
-        npc.setText("Cobblemate", "§e§lRight Click".toUpperCase());
-        npc.setGazeTrackingType(NPC.GazeTrackingType.PLAYER);
-        npc.setGlowing(true, ChatColor.AQUA);
-        npc.setSkin(
-                "ewogICJ0aW1lc3RhbXAiIDogMTY5NTI4NzgzMDY2OSwKICAicHJvZmlsZUlkIiA6ICIzYTJjNmQ2MmU2ZDg0MGMzYTY3MzA2MzA2NzNjMzQ3NCIsCiAgInByb2ZpbGVOYW1lIiA6ICJTczU2IiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzViYmM1NDVjZjkyNjM1MDA0ODJlMTE1MGMyYzgwM2I3NWM0Y2U5MDYwMWJjZjg1ZTk5MjhjZjhiNGFkOTM5Y2MiCiAgICB9CiAgfQp9",
-                "IL/AXPEacpsR/Ys/NSzOXYBUaiByrMrdSEY2427YCxxpVXhEJaPfEI6Nxslxfvdaxwje+KshJonyKE3KvA2MPGXla7ju3MAmSs10FpX5At5aD+yRLY+KouY3+onHs9mnYDXLd71eQE4ZRE2LF1KZUlWGdIqoa4ijeifCrCNa/7juvOk8r3x9vraHwo8ZnIGxV7FHVzmh8PpLoKk+bzKKp2VfZpF+FHXZR7AeHR2GiIzt3BAgEKvLlsAWCtj1jPznzlEAsoYz+jSmqnEp8sOFyDBMj8F6pOgVRIBoDa7qc0n5iLoiYwhRWGyDUW8Zy7YtKQrVcwSa9dTrJq6cARmuwqa0jvDME7fFAglS+ppPF2i7KvRSuHOkKsNDamky9ZwWutW/Q32vsWKpZTfpDC9LwDBzyys4oNm0wunaO40XKNb0u3rkjNp0sYoo2wv9ovyVyT8s20s8htcGbgxKSrwJYgRHCuKKFfB1W+Z2J2rFwLK/DjrQMJ8MIqE9xEv3d6dvo8y3MLMxHeN04jr8jpOtwD5tzaN0vyjXQKieApJJEMx9F5omAkIdIV1BWBCV/fD8LGqBYtgKBtbPvzmcAXpCIEGMVF5mtmTi+oaNjrupSqT6w41xJIjNdYUbitZV0PUuR0K3dECH0CbZO1WcbO1KmpS4vF5y9EfECDrlbwIylgc="
-        );
-        npc.create();
-        npc.setItemInMainHand(new ItemStack(Material.DIAMOND_PICKAXE));
-        npc.setItemInOffHand(new ItemStack(Material.CHEST));
-        npc.show();
-    }
-
-    public void moveNPC(){
-
-        npc.teleport(getIslandNPCSpawnPoint());
-    }
-
-    public Location getIslandNPCSpawnPoint() {
-
-        Location playerSpawnLoc = islandLocation.clone();
-
-        playerSpawnLoc.add(2.5, -1, -ISLAND_SIZE/2-1.5);
-
-        return playerSpawnLoc;
-    }
 
 
     public void setIslandPlayerSpawnPoint(Location islandPlayerSpawnPoint) {
@@ -359,45 +312,18 @@ public class Island {
             return (long) (ILSAND_STARTXP_NEED * Math.pow(1.028, ISLAND_LEVEL));
         } else return (long) (ILSAND_STARTXP_NEED * Math.pow(1.028, 450) * Math.pow(1.0015, ISLAND_LEVEL));
     }
+    /*
     public void autoUpgrade(Player player) {
         taskidxp = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
             long xpneed = calcXPNeedNextLevel();
 
 
-            EconomyAPI economyAPI = de.backpack.main.Main.economyAPI;
-            long xp = economyAPI.getXP(player);
 
             if (player.isOnline()) {
 
                 if (xp > xpneed && getISLAND_LEVEL() < ISLAND_LEVEL_MAX) {
 
-                    TalentInitialzier talentInitialzier = de.prestigesystem.Main.talentInitialzier;
 
-                    UserManager userManager = de.prestigesystem.Main.userManager;
-
-                    List<Talent> talents = talentInitialzier.getTalents();
-
-                    PlayerTalents playerTalents = userManager.getPlayerPlayerTalents().get(player);
-
-                    int level = 0;
-
-                    for (Talent talent : talents) {
-                        if (talent.getName().equalsIgnoreCase("Rankup Multi")) {
-                            level = playerTalents.getTalentLevel(talent);
-                        }
-                    }
-
-                    double chance = level * 0.0015;
-
-                    if (Math.random() < chance) {
-                        setISLAND_LEVEL(getISLAND_LEVEL() + 2, player);
-                        player.sendMessage(prefix + "§7Your Mine has been upgraded twice!");
-                        economyAPI.setXPBalance(player, 0);
-                    } else {
-                        islandUpgrade(player);
-                        economyAPI.setXPBalance(player, 0);
-                    }
-                } else {
                     double progress = (double) xp / xpneed;
 
                     int percentage = (int) (progress * 100);
@@ -440,6 +366,8 @@ public class Island {
         }, 0, 5);
     }
 
+     */
+
     public void stopAutoUpgrade() {
         if (taskidxp != -1) {
             Bukkit.getServer().getScheduler().cancelTask(taskidxp);
@@ -454,36 +382,6 @@ public class Island {
         return 200+(getISLAND_LEVEL()*getISLAND_LEVEL()* 100L);
     }
 
-    public void onPrestige(Player player){
-
-        EconomyAPI economyAPI = de.backpack.main.Main.economyAPI;
-        if(economyAPI.getBlocks(player)>=1000) {
-
-            TalentInitialzier talentInitialzier = de.prestigesystem.Main.talentInitialzier;
-
-            UserManager userManager = de.prestigesystem.Main.userManager;
-
-            List<Talent> talents = talentInitialzier.getTalents();
-
-            PlayerTalents playerTalents = userManager.getPlayerPlayerTalents().get(player);
-
-            int level = 0;
-
-            for(Talent talent : talents) {
-                if(talent.getName().equalsIgnoreCase("Miner")){
-                    level = playerTalents.getTalentLevel(talent);
-                }
-            }
-            setISLAND_LEVEL(level, player);
-
-
-            player.sendMessage(Main.prefix + "you have successfully reached prestige");
-        } else {
-
-            player.sendMessage(Main.prefix + "you can't prestige");
-        }
-
-    }
 
     public boolean checkIfBlockIsInMine(Location location) {
 
@@ -504,11 +402,6 @@ public class Island {
                 && blockY >= startY && blockY <= endY
                 && blockZ >= startZ && blockZ <= endZ;
     }
-
-    public NPC.Personal getNpc() {
-        return npc;
-    }
-
 
     public void setISLAND_WORLD_STRING(){
         char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();

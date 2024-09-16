@@ -1,7 +1,6 @@
 package skyblock.menus;
 
 
-import de.backpack.listener.UnlimitedNumber;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Skull;
@@ -62,19 +61,6 @@ public class IslandMenu implements Listener {
         meta.setLore(lore);
         item.setItemMeta(meta);
 
-        ItemStack item1 = new ItemStack(Material.MINER_POTTERY_SHERD, 1);
-        ItemMeta meta1 = item1.getItemMeta();
-        meta1.setDisplayName("§bMine World");
-        List<String> lore1 = new ArrayList<>();
-        lore1.add("");
-        lore1.add("§7by reaching new mine worlds");
-        lore1.add("§7the size of your mine will increase");
-        lore1.add("");
-        lore1.add("§7current World: §a" + islands.getISLAND_WORLD_STRING());
-        lore1.add("");
-        lore1.add("§bclick to open!");
-        meta1.setLore(lore1);
-        item1.setItemMeta(meta1);
 
         ItemStack item2 = new ItemStack(Material.PAINTING, 1);
         ItemMeta meta2 = item2.getItemMeta();
@@ -102,7 +88,6 @@ public class IslandMenu implements Listener {
 
 
         inventory.setItem(13, item);
-        inventory.setItem(29, item1);
         inventory.setItem(31, item2);
         inventory.setItem(33, item3);
 
@@ -128,8 +113,7 @@ public class IslandMenu implements Listener {
                     player.closeInventory();
                 }
                 if(event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("§bMine World")){
-                    IslandLevelsMenu islandLevelsMenu = new IslandLevelsMenu();
-                    islandLevelsMenu.openMenu(player);
+
 
                 }
                 if(event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("§bMine Themes")){

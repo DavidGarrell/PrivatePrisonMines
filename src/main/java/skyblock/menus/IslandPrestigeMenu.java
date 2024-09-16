@@ -1,8 +1,5 @@
 package skyblock.menus;
 
-import de.backpack.apfloat.Apfloat;
-import de.backpack.listener.EconomyAPI;
-import de.backpack.listener.UnlimitedNumber;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;

@@ -46,8 +46,6 @@ public class PlayerJoin implements Listener {
         } else {
             Island island = islandManager.island.get(player.getUniqueId());
             player.teleport(island.getIslandPlayerSpawnPoint());
-            island.placeNPC(player);
-            island.autoUpgrade(player);
         }
 
     }

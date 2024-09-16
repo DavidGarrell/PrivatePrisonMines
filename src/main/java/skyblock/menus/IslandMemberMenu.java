@@ -2,9 +2,6 @@ package skyblock.menus;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import de.backpack.apfloat.Apfloat;
-import de.backpack.listener.EconomyAPI;
-import de.backpack.listener.UnlimitedNumber;
 import jdk.vm.ci.meta.SpeculationLog;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
