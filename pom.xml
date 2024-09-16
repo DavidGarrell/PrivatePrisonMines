@@ -20,17 +20,8 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.4.1</version> <!-- Aktualisierte Version -->
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -38,33 +29,24 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <outputFile>
-                                D:\SkyBlockLand\plugins\PrivateMine.jar
-                            </outputFile>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
                             <transformers>
-                                <!-- Shade the apfloat dependency -->
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                                     <resource>META-INF/services/*</resource>
                                 </transformer>
                             </transformers>
                             <relocations>
-                                <!-- Relocate the apfloat classes to a different package -->
                                 <relocation>
                                     <pattern>org.apfloat</pattern>
                                     <shadedPattern>de.pickaxeenchants.apfloat</shadedPattern>
                                 </relocation>
                             </relocations>
+                            <minimizeJar>false</minimizeJar>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
     </build>
 
     <repositories>

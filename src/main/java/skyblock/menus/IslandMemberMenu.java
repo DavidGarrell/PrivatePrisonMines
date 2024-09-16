@@ -2,7 +2,6 @@ package skyblock.menus;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import jdk.vm.ci.meta.SpeculationLog;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
